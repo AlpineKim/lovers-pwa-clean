@@ -1,1 +1,40 @@
-<!DOCTYPE html><html><head><title>LOVERS PWA</title></head><body><h1>LOVERS PWA v0.1-ghp-alpine</h1><script src='static/js/app.js'></script></body></html>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>LOVERS PWA</title>
+  <style>
+    body { font-family: sans-serif; padding: 2rem; }
+    .banner { font-weight: bold; font-size: 1.5rem; margin-bottom: 1rem; }
+    .item { margin: 1rem 0; }
+    button { margin: 0 0.5rem; }
+  </style>
+</head>
+<body>
+  <div class="banner">LOVERS PWA v0.1-ghp-alpine</div>
+  <div class="item">Activity 1:
+    <button onclick="setResponse('activity1', 'yes')">Yes</button>
+    <button onclick="setResponse('activity1', 'future')">Future</button>
+    <button onclick="setResponse('activity1', 'maybe')">Maybe</button>
+    <button onclick="setResponse('activity1', 'no')">No</button>
+    <span id="response-activity1"></span>
+  </div>
+  <script>
+    function setResponse(id, value) {
+      localStorage.setItem(id, value);
+      document.getElementById('response-' + id).innerText = '(' + value + ')';
+    }
+
+    function loadResponses() {
+      ['activity1'].forEach(id => {
+        const val = localStorage.getItem(id);
+        if (val) document.getElementById('response-' + id).innerText = '(' + val + ')';
+      });
+    }
+
+    window.onload = loadResponses;
+  </script>
+</body>
+</html>
