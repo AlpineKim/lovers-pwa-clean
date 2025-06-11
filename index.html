@@ -4,84 +4,29 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>LOVERS PWA</title>
-  <script type="module" src="firebase.js"></script>
+  <title>LOVERS PWA — v1.4b Firestore</title>
   <style>
-    body { font-family: sans-serif; padding: 2rem; max-width: 600px; margin: auto; }
-    .banner { font-weight: bold; font-size: 1.5rem; margin-bottom: 2rem; text-align: center; }
-    .item { margin: 1.5rem 0; }
-    button {
-      margin: 0 0.25rem;
-      padding: 0.3rem 0.6rem;
-      border-radius: 6px;
-      border: none;
-      background-color: #eee;
-      cursor: pointer;
-    }
-    button:hover {
-      background-color: #ccc;
-    }
+    body { font-family: sans-serif; padding: 2rem; max-width: 800px; margin: auto; }
+    .banner { font-size: 1.6rem; font-weight: bold; margin-bottom: 2rem; text-align: center; }
+    .auth-box { margin-bottom: 2rem; text-align: center; }
+    .auth-box input { margin: 0.25rem; padding: 0.5rem; }
+    .auth-box button { padding: 0.5rem; margin-left: 0.5rem; }
+    .item { margin: 1.25rem 0; }
+    button { margin: 0 0.25rem; padding: 0.3rem 0.6rem; }
     span { font-weight: bold; margin-left: 0.5rem; }
   </style>
+  <script type="module" src="firebase-firestore.js"></script>
 </head>
 <body>
-  <div class="banner">LOVERS PWA — Production v1.0</div>
-  
-    <div class="item">Kissing (mouth):
-      <button onclick="setResponse('activity1', 'yes')">Yes</button>
-      <button onclick="setResponse('activity1', 'future')">Future</button>
-      <button onclick="setResponse('activity1', 'maybe')">Maybe</button>
-      <button onclick="setResponse('activity1', 'no')">No</button>
-      <span id="response-activity1"></span>
-    </div>
-    
-    <div class="item">Cuddling / Holding each other:
-      <button onclick="setResponse('activity2', 'yes')">Yes</button>
-      <button onclick="setResponse('activity2', 'future')">Future</button>
-      <button onclick="setResponse('activity2', 'maybe')">Maybe</button>
-      <button onclick="setResponse('activity2', 'no')">No</button>
-      <span id="response-activity2"></span>
-    </div>
-    
-    <div class="item">Oral sex (giving):
-      <button onclick="setResponse('activity3', 'yes')">Yes</button>
-      <button onclick="setResponse('activity3', 'future')">Future</button>
-      <button onclick="setResponse('activity3', 'maybe')">Maybe</button>
-      <button onclick="setResponse('activity3', 'no')">No</button>
-      <span id="response-activity3"></span>
-    </div>
-    
-    <div class="item">Oral sex (receiving):
-      <button onclick="setResponse('activity4', 'yes')">Yes</button>
-      <button onclick="setResponse('activity4', 'future')">Future</button>
-      <button onclick="setResponse('activity4', 'maybe')">Maybe</button>
-      <button onclick="setResponse('activity4', 'no')">No</button>
-      <span id="response-activity4"></span>
-    </div>
-    
-    <div class="item">Using a vibrator on partner:
-      <button onclick="setResponse('activity5', 'yes')">Yes</button>
-      <button onclick="setResponse('activity5', 'future')">Future</button>
-      <button onclick="setResponse('activity5', 'maybe')">Maybe</button>
-      <button onclick="setResponse('activity5', 'no')">No</button>
-      <span id="response-activity5"></span>
-    </div>
-    
-  <script>
-    function setResponse(id, value) {
-      localStorage.setItem(id, value);
-      document.getElementById('response-' + id).innerText = '(' + value + ')';
-    }
-    function loadResponses() {
-      const ids = ['activity1`, 'activity2`, 'activity3`, 'activity4`, 'activity5`];
-      ids.forEach(id => {
-        const val = localStorage.getItem(id);
-        if (val) {
-          document.getElementById('response-' + id).innerText = '(' + val + ')';
-        }
-      });
-    }
-    window.onload = loadResponses;
-  </script>
+  <div class="banner">LOVERS PWA — v1.4b (Firestore Sync)</div>
+  <div class="auth-box">
+    <input type="email" id="email" placeholder="Email" />
+    <input type="password" id="password" placeholder="Password" />
+    <button onclick="signIn()">Sign In</button>
+    <button onclick="signOut()">Sign Out</button>
+    <div id="user-status">Not signed in</div>
+  </div>
+
+  <div id="checklist">Loading checklist...</div>
 </body>
 </html>
