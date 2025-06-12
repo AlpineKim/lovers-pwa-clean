@@ -1,4 +1,10 @@
-const items = ["kissing", "holding hands", "cuddling", "oral", "toys", "dirty talk"];
+const items = ["Kissing"
+               , "Holding hands"
+               , "Cuddling"
+               , "Oral"
+               , "Toys"
+               , "Dirty talk"
+               , "Bathing"];
 
 function saveResponse(uid, item, response) {
   const btns = document.querySelectorAll(`[data-item='${item}'] button`);
