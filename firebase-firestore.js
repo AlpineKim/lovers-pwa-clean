@@ -1,7 +1,28 @@
-console.log("firebase-firestore.js loaded");
+const items = ["kissing", "holding hands", "cuddling", "oral", "toys", "dirty talk"];
 
-function mockFirestoreInteraction() {
-  console.log("Firestore interaction stub");
+function saveResponse(uid, item, response) {
+  db.collection("checklists").add({ uid, item, response });
 }
 
-mockFirestoreInteraction();
+function loadChecklist(uid) {
+  const container = document.getElementById("checklist");
+  container.innerHTML = "";
+  items.forEach(item => {
+    const div = document.createElement("div");
+    div.className = "item";
+    div.innerHTML = \`\${item}: 
+      <button onclick="saveResponse('\${uid}', '\${item}', 'yes')">Yes</button>
+      <button onclick="saveResponse('\${uid}', '\${item}', 'maybe')">Maybe</button>
+      <button onclick="saveResponse('\${uid}', '\${item}', 'no')">No</button>
+      <span id="response-\${item}"></span>\`;
+    container.appendChild(div);
+  });
+
+  db.collection("checklists").where("uid", "==", uid).get().then(snapshot => {
+    snapshot.forEach(doc => {
+      const data = doc.data();
+      const span = document.getElementById("response-" + data.item);
+      if (span) span.textContent = " (selected: " + data.response + ")";
+    });
+  });
+}

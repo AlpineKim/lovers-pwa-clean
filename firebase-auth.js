@@ -1,10 +1,15 @@
 function signIn() {
-  console.log("signIn called");
+  auth.signInWithPopup(new firebase.auth.GoogleAuthProvider())
+    .then(result => {
+      document.getElementById("user-info").textContent = "Signed in as " + result.user.displayName;
+      loadChecklist(result.user.uid);
+    })
+    .catch(console.error);
 }
 
 function signOut() {
-  console.log("signOut called");
+  auth.signOut().then(() => {
+    document.getElementById("user-info").textContent = "";
+    document.getElementById("checklist").innerHTML = "";
+  });
 }
-
-window.signIn = signIn;
-window.signOut = signOut;
