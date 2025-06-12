@@ -1,32 +1,14 @@
-
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>LOVERS PWA — v1.4b Firestore</title>
-  <style>
-    body { font-family: sans-serif; padding: 2rem; max-width: 800px; margin: auto; }
-    .banner { font-size: 1.6rem; font-weight: bold; margin-bottom: 2rem; text-align: center; }
-    .auth-box { margin-bottom: 2rem; text-align: center; }
-    .auth-box input { margin: 0.25rem; padding: 0.5rem; }
-    .auth-box button { padding: 0.5rem; margin-left: 0.5rem; }
-    .item { margin: 1.25rem 0; }
-    button { margin: 0 0.25rem; padding: 0.3rem 0.6rem; }
-    span { font-weight: bold; margin-left: 0.5rem; }
-  </style>
-  <script type="module" src="firebase-firestore.js"></script>
+  <title>LOVERS PWA - Debug Fix 3</title>
+  <script src="firebase-auth.js"></script>
+  <script src="firebase-firestore.js"></script>
 </head>
 <body>
-  <div class="banner">LOVERS PWA — v1.4b (Firestore Sync)</div>
-  <div class="auth-box">
-    <input type="email" id="email" placeholder="Email" />
-    <input type="password" id="password" placeholder="Password" />
-    <button onclick="signIn()">Sign In</button>
-    <button onclick="signOut()">Sign Out</button>
-    <div id="user-status">Not signed in</div>
-  </div>
-
-  <div id="checklist">Loading checklist...</div>
+  <h1>LOVERS Checklist</h1>
+  <button onclick="signIn()">Sign In</button>
+  <button onclick="signOut()">Sign Out</button>
+  <div id="checklist">Loading...</div>
 </body>
 </html>
