@@ -10,11 +10,12 @@ function loadChecklist(uid) {
   items.forEach(item => {
     const div = document.createElement("div");
     div.className = "item";
-    div.innerHTML = \`\${item}: 
-      <button onclick="saveResponse('\${uid}', '\${item}', 'yes')">Yes</button>
-      <button onclick="saveResponse('\${uid}', '\${item}', 'maybe')">Maybe</button>
-      <button onclick="saveResponse('\${uid}', '\${item}', 'no')">No</button>
-      <span id="response-\${item}"></span>\`;
+    div.innerHTML = `${item}: 
+      <button onclick="saveResponse('${uid}', '${item}', 'Yes')">Yes</button>
+      <button onclick="saveResponse('${uid}', '${item}', 'Future')">Yes</button>
+      <button onclick="saveResponse('${uid}', '${item}', 'Maybe')">Maybe</button>
+      <button onclick="saveResponse('${uid}', '${item}', 'No')">No</button>
+      <span id="response-${item}"></span>`;
     container.appendChild(div);
   });
 
