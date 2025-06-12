@@ -36,6 +36,7 @@ function loadChecklist(uid) {
         const meta = responses[item] ? `<span class="meta">(Last: ${responses[item].timestamp})</span>` : "";
         div.innerHTML = \`\${item}:\${meta}
           <button data-response="yes" onclick="saveResponse('\${uid}', '\${item}', 'yes')">Yes</button>
+          <button data-response="future" onclick="saveResponse('\${uid}', '\${item}', 'future')">Future</button>
           <button data-response="maybe" onclick="saveResponse('\${uid}', '\${item}', 'maybe')">Maybe</button>
           <button data-response="no" onclick="saveResponse('\${uid}', '\${item}', 'no')">No</button>
           <span id="response-\${item}"></span>\`;
