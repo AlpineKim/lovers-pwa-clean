@@ -1,4 +1,3 @@
-
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-app.js";
 import { getAuth, signInWithEmailAndPassword, signOut as firebaseSignOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-auth.js";
 import { getFirestore, collection, query, where, getDocs, setDoc, doc } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-firestore.js";
@@ -17,75 +16,60 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-let currentUID = null;
+window.signIn = async function() {
+  const email = document.getElementById('email').value;
+  const password = document.getElementById('password').value;
+  try {
+    const userCredential = await signInWithEmailAndPassword(auth, email, password);
+    console.log("✅ Signed in:", userCredential.user.email);
+  } catch (error) {
+    console.error("❌ Sign-in error:", error.message);
+  }
+};
 
-function signIn() {
-  const email = document.getElementById("email").value;
-  const password = document.getElementById("password").value;
-  signInWithEmailAndPassword(auth, email, password)
-    .then((userCredential) => {
-      currentUID = userCredential.user.uid;
-      document.getElementById("user-status").innerText = "Signed in as: " + userCredential.user.email;
-      loadChecklist();
-    })
-    .catch((error) => {
-      alert("Login error: " + error.message);
-    });
-}
+window.signOut = async function() {
+  try {
+    await firebaseSignOut(auth);
+    console.log("✅ Signed out");
+  } catch (error) {
+    console.error("❌ Sign-out error:", error.message);
+  }
+};
 
-function signOut() {
-  firebaseSignOut(auth).then(() => {
-    currentUID = null;
-    document.getElementById("user-status").innerText = "Signed out";
-    document.getElementById("checklist").innerHTML = "";
-  });
-}
-
-onAuthStateChanged(auth, (user) => {
+onAuthStateChanged(auth, async (user) => {
+  const status = document.getElementById("status");
   if (user) {
-    currentUID = user.uid;
-    document.getElementById("user-status").innerText = "Signed in as: " + user.email;
-    loadChecklist();
+    status.textContent = `Signed in as: ${user.email}`;
+    console.log("🔄 Fetching checklist...");
+    const checklistRef = collection(db, "checklists");
+    const q = query(checklistRef, where("uid", "==", user.uid));
+    const querySnapshot = await getDocs(q);
+
+    const container = document.getElementById("checklist");
+    container.innerHTML = "";
+    const items = ["Kissing", "Cuddling", "Oral (giving)", "Oral (receiving)", "Vibrator use"];
+
+    items.forEach((item, index) => {
+      const div = document.createElement("div");
+      div.textContent = item + ": ";
+      ["Yes", "Future", "Maybe", "No"].forEach(response => {
+        const button = document.createElement("button");
+        button.textContent = response;
+        button.onclick = async () => {
+          const docId = `${user.uid}-${index}`;
+          await setDoc(doc(db, "checklists", docId), {
+            uid: user.uid,
+            itemId: index,
+            response: response
+          });
+          console.log(`✅ Saved [${item}] -> ${response}`);
+        };
+        div.appendChild(button);
+      });
+      container.appendChild(div);
+    });
+  } else {
+    status.textContent = "Not signed in";
+    document.getElementById("checklist").textContent = "Please sign in to load checklist.";
   }
 });
-
-async function loadChecklist() {
-  const container = document.getElementById("checklist");
-  container.innerHTML = "Loading checklist...";
-
-  const items = ["kissing", "holding hands", "cuddling", "oral", "toys", "dirty talk"]; // example items
-  container.innerHTML = "";
-  for (let item of items) {
-    const div = document.createElement("div");
-    div.className = "item";
-    div.innerHTML = \`\${item}: 
-      <button onclick="saveResponse('\${item}', 'yes')">Yes</button>
-      <button onclick="saveResponse('\${item}', 'maybe')">Maybe</button>
-      <button onclick="saveResponse('\${item}', 'no')">No</button>
-      <span id="response-\${item}"></span>
-    \`;
-    container.appendChild(div);
-  }
-
-  const q = query(collection(db, "checklists"), where("uid", "==", currentUID));
-  const snapshot = await getDocs(q);
-  snapshot.forEach(docSnap => {
-    const data = docSnap.data();
-    const respEl = document.getElementById("response-" + data.itemId);
-    if (respEl) {
-      respEl.textContent = "(" + data.response + ")";
-    }
-  });
-}
-
-async function saveResponse(itemId, response) {
-  if (!currentUID) return alert("Please sign in first.");
-  const docRef = doc(db, "checklists", currentUID + "-" + itemId);
-  await setDoc(docRef, { uid: currentUID, itemId, response });
-  const respEl = document.getElementById("response-" + itemId);
-  if (respEl) respEl.textContent = "(" + response + ")";
-}
-
-window.signIn = signIn;
-window.signOut = signOut;
-window.saveResponse = saveResponse;
