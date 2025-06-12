@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Checklist Admin Secure</title>
+  <style>
+    body {
+      background: #800000;
+      color: white;
+      font-family: sans-serif;
+      padding: 2em;
+    }
+    input, button, textarea {
+      margin-top: 1em;
+      font-size: 1rem;
+    }
+    ul {
+      list-style-type: none;
+      padding-left: 0;
+    }
+    li {
+      margin: 0.5em 0;
+    }
+    .item-entry {
+      display: flex;
+      gap: 1em;
+      align-items: center;
+    }
+    .item-entry button {
+      background: #d33;
+      color: white;
+      border: none;
+      padding: 0.3em 0.6em;
+      cursor: pointer;
+    }
+  </style>
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyBP95i8uOQQegp8ey-zf3cHah9oeejaaLs",
+      authDomain: "lovers-pwa.firebaseapp.com",
+      projectId: "lovers-pwa",
+      storageBucket: "lovers-pwa.firebasestorage.app",
+      messagingSenderId: "966142079690",
+      appId: "1:966142079690:web:c817588c8ad4e73edc7a33",
+      measurementId: "G-R4V0H041S8"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+    const auth = firebase.auth();
+
+    let currentUID = null;
+
+    function signIn() {
+      auth.signInWithPopup(new firebase.auth.GoogleAuthProvider())
+        .then(result => {
+          currentUID = result.user.uid;
+          checkAdmin();
+        })
+        .catch(console.error);
+    }
+
+    function checkAdmin() {
+      db.collection("roles").doc(currentUID).get().then(doc => {
+        if (doc.exists && doc.data().role === "admin") {
+          document.getElementById("auth").style.display = "none";
+          document.getElementById("editor").style.display = "block";
+          loadItems();
+        } else {
+          alert("Access denied: You are not an admin.");
+        }
+      });
+    }
+
+    function loadItems() {
+      db.collection("items").doc("current").get().then(doc => {
+        if (doc.exists) {
+          const data = doc.data().list || [];
+          document.getElementById("jsonInput").value = JSON.stringify(data, null, 2);
+          buildEditor(data);
+        }
+      });
+    }
+
+    function saveItems() {
+      const inputs = document.querySelectorAll("#itemList input");
+      const items = Array.from(inputs).map(i => i.value.trim()).filter(Boolean);
+      const now = new Date().toISOString();
+      db.collection("items_history").add({
+        list: items,
+        timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+        savedBy: currentUID
+      });
+      db.collection("items").doc("current").set({ list: items });
+      document.getElementById("jsonInput").value = JSON.stringify(items, null, 2);
+    }
+
+    function buildEditor(items) {
+      const list = document.getElementById("itemList");
+      list.innerHTML = "";
+      items.forEach((item, index) => {
+        const li = document.createElement("li");
+        li.className = "item-entry";
+        li.innerHTML = `
+          <input type="text" value="${item}" data-index="${index}" />
+          <button onclick="removeItem(${index})">Remove</button>
+        `;
+        list.appendChild(li);
+      });
+    }
+
+    function addItem() {
+      const newItem = document.getElementById("newItem").value.trim();
+      if (!newItem) return;
+      const textarea = document.getElementById("jsonInput");
+      let items = [];
+      try {
+        items = JSON.parse(textarea.value);
+      } catch {
+        items = [];
+      }
+      items.push(newItem);
+      textarea.value = JSON.stringify(items, null, 2);
+      document.getElementById("newItem").value = "";
+      buildEditor(items);
+    }
+
+    function removeItem(index) {
+      const textarea = document.getElementById("jsonInput");
+      let items = JSON.parse(textarea.value);
+      items.splice(index, 1);
+      textarea.value = JSON.stringify(items, null, 2);
+      buildEditor(items);
+    }
+  </script>
+</head>
+<body>
+  <div id="auth">
+    <h2>Admin Login Required</h2>
+    <button onclick="signIn()">Sign in with Google</button>
+  </div>
+
+  <div id="editor" style="display:none">
+    <h1>Checklist Admin Editor (Secure)</h1>
+    <textarea id="jsonInput" rows="10" cols="50"></textarea><br>
+    <button onclick="saveItems()">Save Items</button>
+
+    <h2>Items</h2>
+    <ul id="itemList"></ul>
+    <input type="text" id="newItem" placeholder="Add new item" />
+    <button onclick="addItem()">Add</button>
+  </div>
+</body>
+</html>

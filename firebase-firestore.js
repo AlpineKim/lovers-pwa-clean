@@ -1,61 +1,75 @@
-const items = ["Kissing"
-               , "Holding hands"
-               , "Cuddling"
-               , "Oral"
-               , "Toys"
-               , "Dirty talk"
-               , "Bathing"];
+import { initializeApp } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-app.js";
+import { getAuth, signInWithEmailAndPassword, signOut as firebaseSignOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-auth.js";
+import { getFirestore, collection, query, where, getDocs, setDoc, doc } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-firestore.js";
 
-function saveResponse(uid, item, response) {
-  const btns = document.querySelectorAll(`[data-item='${item}'] button`);
-  btns.forEach(btn => btn.classList.remove("selected"));
-  const selectedBtn = document.querySelector(`[data-item='${item}'] button[data-response='${response}']`);
-  if (selectedBtn) selectedBtn.classList.add("selected");
+const firebaseConfig = {
+  apiKey: "AIzaSyBP95i8uOQQegp8ey-zf3cHah9oeejaaLs",
+  authDomain: "lovers-pwa.firebaseapp.com",
+  projectId: "lovers-pwa",
+  storageBucket: "lovers-pwa.firebasestorage.app",
+  messagingSenderId: "966142079690",
+  appId: "1:966142079690:web:c817588c8ad4e73edc7a33",
+  measurementId: "G-R4V0H041S8"
+};
 
-  db.collection("checklists")
-    .add({ uid, item, response, timestamp: firebase.firestore.FieldValue.serverTimestamp() });
-}
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
 
-function loadChecklist(uid) {
-  const container = document.getElementById("checklist");
-  container.innerHTML = "";
-  const responses = {};
+window.signIn = async function() {
+  const email = document.getElementById('email').value;
+  const password = document.getElementById('password').value;
+  try {
+    const userCredential = await signInWithEmailAndPassword(auth, email, password);
+    console.log("✅ Signed in:", userCredential.user.email);
+  } catch (error) {
+    console.error("❌ Sign-in error:", error.message);
+  }
+};
 
-  db.collection("checklists")
-    .where("uid", "==", uid)
-    .orderBy("timestamp", "desc")
-    .get()
-    .then(snapshot => {
-      snapshot.forEach(doc => {
-        const data = doc.data();
-        if (!responses[data.item]) {
-          responses[data.item] = {
-            response: data.response,
-            timestamp: data.timestamp?.toDate().toLocaleString() || ""
-          };
-        }
+window.signOut = async function() {
+  try {
+    await firebaseSignOut(auth);
+    console.log("✅ Signed out");
+  } catch (error) {
+    console.error("❌ Sign-out error:", error.message);
+  }
+};
+
+onAuthStateChanged(auth, async (user) => {
+  const status = document.getElementById("status");
+  if (user) {
+    status.textContent = `Signed in as: ${user.email}`;
+    console.log("🔄 Fetching checklist...");
+    const checklistRef = collection(db, "checklists");
+    const q = query(checklistRef, where("uid", "==", user.uid));
+    const querySnapshot = await getDocs(q);
+
+    const container = document.getElementById("checklist");
+    container.innerHTML = "";
+    const items = ["Kissing", "Cuddling", "Oral (giving)", "Oral (receiving)", "Vibrator use"];
+
+    items.forEach((item, index) => {
+      const div = document.createElement("div");
+      div.textContent = item + ": ";
+      ["Yes", "Future", "Maybe", "No"].forEach(response => {
+        const button = document.createElement("button");
+        button.textContent = response;
+        button.onclick = async () => {
+          const docId = `${user.uid}-${index}`;
+          await setDoc(doc(db, "checklists", docId), {
+            uid: user.uid,
+            itemId: index,
+            response: response
+          });
+          console.log(`✅ Saved [${item}] -> ${response}`);
+        };
+        div.appendChild(button);
       });
-
-      items.forEach(item => {
-        const div = document.createElement("div");
-        div.className = "item";
-        div.setAttribute("data-item", item);
-        const meta = responses[item] ? `<span class="meta">(Last: ${responses[item].timestamp})</span>` : "";
-        div.innerHTML = `${item}:${meta}
-          <button data-response="yes" onclick="saveResponse('${uid}', '${item}', 'yes')">Yes</button>
-          <button data-response="future" onclick="saveResponse('${uid}', '${item}', 'future')">Future</button>
-          <button data-response="maybe" onclick="saveResponse('${uid}', '${item}', 'maybe')">Maybe</button>
-          <button data-response="no" onclick="saveResponse('${uid}', '${item}', 'no')">No</button>
-          <span id="response-${item}"></span>`;
-        container.appendChild(div);
-        if (responses[item]) {
-          const btn = div.querySelector(`button[data-response='${responses[item].response}']`);
-          if (btn) btn.classList.add("selected");
-        }
-      });
+      container.appendChild(div);
     });
-}
-
-// Globalize
-window.loadChecklist = loadChecklist;
-window.saveResponse = saveResponse;
+  } else {
+    status.textContent = "Not signed in";
+    document.getElementById("checklist").textContent = "Please sign in to load checklist.";
+  }
+});

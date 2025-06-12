@@ -1,34 +1,16 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <meta charset="UTF-8" />
-  <link rel="icon" type="image/x-icon" href="favicon.ico" />
-  <title>LOVERS PWA</title>
-  <style>
-    body { font-family: sans-serif; margin: 2em; }
-    .item { margin: 1em 0; }
-    button.selected {
-      background-color: #c00;
-      color: white;
-      font-weight: bold;
-      border: 2px solid black;
-    }
-    .meta { font-size: 0.85em; color: #666; margin-left: 1em; }
-  </style>
-  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
-  <script src="firebase-config.js"></script>
-  <script src="firebase-auth.js"></script>
-  <script src="firebase-firestore.js"></script>
+  <title>LOVERS PWA — v1.4c (Debug Mode)</title>
+  <script type="module" src="firebase-firestore.js"></script>
 </head>
 <body>
-  <h1>LOVERS Checklist</h1>
-  <div id="auth">
-    <button onclick="signIn()">Sign In</button>
-    <button onclick="signOut()">Sign Out</button>
-    <div id="user-info"></div>
-  </div>
+  <h1>LOVERS PWA — v1.4c (Firestore Debug)</h1>
+  <input type="email" id="email" placeholder="Email">
+  <input type="password" id="password" placeholder="Password">
+  <button onclick="signIn()">Sign In</button>
+  <button onclick="signOut()">Sign Out</button>
+  <p id="status">Not signed in</p>
   <div id="checklist">Loading checklist...</div>
 </body>
 </html>

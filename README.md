@@ -1,2 +1,1 @@
-# LOVERS PWA v1.4b
-Includes Firestore sync with autosave per click.
+LOVERS PWA v1.4c Debug: Firebase auth and Firestore checklist with logs.
