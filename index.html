@@ -1,16 +1,23 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>LOVERS PWA — v1.4c (Debug Mode)</title>
+  <meta charset="UTF-8" />
+  <title>LOVERS PWA — v1.4c Debug Fix 1</title>
   <script type="module" src="firebase-firestore.js"></script>
 </head>
 <body>
-  <h1>LOVERS PWA — v1.4c (Firestore Debug)</h1>
+  <h1>LOVERS PWA — v1.4c (Firestore Debug Fix 1)</h1>
+
+  <!-- Input for Firebase email/password auth -->
   <input type="email" id="email" placeholder="Email">
   <input type="password" id="password" placeholder="Password">
   <button onclick="signIn()">Sign In</button>
   <button onclick="signOut()">Sign Out</button>
+
+  <!-- Auth status indicator -->
   <p id="status">Not signed in</p>
+
+  <!-- Checklist items will be loaded here -->
   <div id="checklist">Loading checklist...</div>
 </body>
 </html>
