@@ -12,7 +12,7 @@ function loadChecklist(uid) {
     div.className = "item";
     div.innerHTML = `${item}: 
       <button onclick="saveResponse('${uid}', '${item}', 'Yes')">Yes</button>
-      <button onclick="saveResponse('${uid}', '${item}', 'Future')">Yes</button>
+      <button onclick="saveResponse('${uid}', '${item}', 'Future')">Future</button>
       <button onclick="saveResponse('${uid}', '${item}', 'Maybe')">Maybe</button>
       <button onclick="saveResponse('${uid}', '${item}', 'No')">No</button>
       <span id="response-${item}"></span>`;
