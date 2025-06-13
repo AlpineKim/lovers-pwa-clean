@@ -1,8 +1,1 @@
-// Cleaned Firestore logic
-console.log("firebase-firestore.js loaded");
-
-function mockFirestoreInteraction() {
-  console.log("Firestore interaction stub");
-}
-
-mockFirestoreInteraction();
+console.log('Firestore logic loaded');
