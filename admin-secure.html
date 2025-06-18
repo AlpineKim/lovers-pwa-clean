@@ -129,7 +129,13 @@
 
     function removeItem(index) {
       const textarea = document.getElementById("jsonInput");
-      let items = JSON.parse(textarea.value);
+      let items = [];
+      try {
+        items = JSON.parse(textarea.value);
+      } catch (e) {
+        alert("Error parsing items. Resetting list.");
+        items = [];
+      }
       items.splice(index, 1);
       textarea.value = JSON.stringify(items, null, 2);
       buildEditor(items);
